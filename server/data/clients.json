@@ -1,0 +1,28 @@
+{
+	"clients": [
+		{
+			"id": 1,
+			"fullname": "Lương Thanh Hoàng Phú",
+			"contact": "0123456779",
+			"email": "luongthanhoangphu@gmail.com",
+			"bigAvatar": "avatar/big/1.jpg",
+			"smallAvatar": "avatar/small/1.jpg" 
+		},
+		{
+			"id": 2,
+			"fullname": "Nguyễn Lê Duy",
+			"contact": "0123456778",
+			"email": "nguyenleduy@gmail.com",
+			"bigAvatar": "avatar/big/2.jpg",
+			"smallAvatar": "avatar/small/2.jpg" 
+		},
+		{
+			"id": 0,
+			"fullname": "Từ Văn Quí",
+			"contact": "0123456777",
+			"email": "tuvanqui@gmail.com",
+			"bigAvatar": "avatar/big/3.jpg",
+			"smallAvatar": "avatar/small/3.jpg" 
+		}
+	]
+}
