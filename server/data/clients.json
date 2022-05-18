@@ -1,28 +1,71 @@
 {
+	"direct_to_avatar": [
+		{
+			"bigAvatar": "data/avatar/big/",
+			"smallAvatar": "data/avatar/small/" 
+		}
+	]
+	,
 	"clients": [
 		{
 			"id": 1,
 			"fullname": "Lương Thanh Hoàng Phú",
 			"contact": "0123456779",
-			"email": "luongthanhoangphu@gmail.com",
-			"bigAvatar": "data/avatar/big/1.jpg",
-			"smallAvatar": "data/avatar/small/1.jpg" 
+			"email": "luongthanhoangphu@gmail.com"
 		},
 		{
 			"id": 2,
 			"fullname": "Nguyễn Lê Duy",
 			"contact": "0123456778",
-			"email": "nguyenleduy@gmail.com",
-			"bigAvatar": "data/avatar/big/2.jpg",
-			"smallAvatar": "data/avatar/small/2.jpg" 
+			"email": "nguyenleduy@gmail.com"
 		},
 		{
 			"id": 0,
 			"fullname": "Từ Văn Quí",
 			"contact": "0123456777",
-			"email": "tuvanqui@gmail.com",
-			"bigAvatar": "data/avatar/big/0.jpg",
-			"smallAvatar": "data/avatar/small/0.jpg" 
+			"email": "tuvanqui@gmail.com"
+		},
+		{
+			"id": 4,
+			"fullname": "Nguyễn Thị A",
+			"contact": "0123456744",
+			"email": "nguyenthia@gmail.com"
+		},
+		{
+			"id": 5,
+			"fullname": "Nguyễn Công V",
+			"contact": "0123456745",
+			"email": "nguyencongv@gmail.com"
+		},
+		{
+			"id": 7,
+			"fullname": "Nguyễn Văn T",
+			"contact": "0123456723",
+			"email": "nguyenvant@gmail.com"
+		},
+		{
+			"id": 6,
+			"fullname": "Phạm Văn A",
+			"contact": "0123456741",
+			"email": null
+		},
+		{
+			"id": 3,
+			"fullname": "Phạm Văn B",
+			"contact": "0122456745",
+			"email": null
+		},
+		{
+			"id": 9,
+			"fullname": "Lương Thanh A",
+			"contact": "0123453741",
+			"email": "luongthanha@gmail.com"
+		},
+		{
+			"id": 8,
+			"fullname": "Oliva Rodrigo",
+			"contact": "0522456745",
+			"email": "olviarodrigo@gmail.com"
 		}
 	]
 }
