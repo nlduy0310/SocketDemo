@@ -1,7 +1,8 @@
 import json
 from PIL import Image, ImageOps, ImageDraw
+import os
 
-CLIENTS_FILE = "data/clients.json"
+CLIENTS_FILE = 'data/clients.json'
 DIRECT_TO_AVATAR = []
 
 class Client:
@@ -23,7 +24,7 @@ class Client:
                 self.email = data['email']
 
     def __str__(self):
-        return "Id: " + str(self.id) + " \nFull name: " +  self.fullname + " \nContract: " +  self.contact + "\nEmail: " + self.email
+        return "Id: " + str(self.id) + " \nFull name: " +  self.fullname + " \nContact: " +  self.contact + "\nEmail: " + self.email
 
     def get_dir_big_avatar(self):
         return DIRECT_TO_AVATAR[0] + str(self.id) + ".png"
@@ -108,6 +109,7 @@ def load():
 # ------- main ------- #
 if __name__ == "__main__":
     clients = load()
+    clients.show_all()
     # Hàm covert Avatar lớn sang nhỏ:
     clients.convert_big_to_small()
     # print("Tổng số thành viên: ", clients.size)
