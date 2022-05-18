@@ -57,6 +57,7 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.search_input_field.sizePolicy().hasHeightForWidth())
         self.search_input_field.setSizePolicy(sizePolicy)
+        self.search_input_field.setFocusPolicy(QtCore.Qt.ClickFocus)
         self.search_input_field.setStyleSheet("font: 14pt \"Calibri\"; background-color:rgb(85, 255, 255); border-radius: 20px")
         self.search_input_field.setText("")
         self.search_input_field.setAlignment(QtCore.Qt.AlignCenter)
@@ -619,10 +620,9 @@ import sys
 
 app = QtWidgets.QApplication(sys.argv)
 
-if __name__ == '__main__':
+if __name__ =='__main__':
     obj = Ui_MainWindow()
     wind = QtWidgets.QMainWindow()
     obj.setupUi(wind)
     wind.show()
     sys.exit(app.exec_())
-
