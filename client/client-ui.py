@@ -21,6 +21,15 @@ import os
 from handle_json import *
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+HOST = "127.0.0.1"
+SERVER_PORT = 65432
+FORMAT = "utf8"
+SEPARATOR = "</>"
+BUFFER_SIZE = 1024
+END_MESSAGE_SIZE = 17
+SMALL_PIC_FOLDER = "data/avatar/small"
+BIG_PIC_FOLDER = "data/avatar/big"
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -681,8 +690,10 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
+        # connect signals & slots
         self.next_page_button.clicked.connect(self.next_page)
         self.prev_page_button.clicked.connect(self.prev_page)
+        self.search_button.clicked.connect(self.search)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -720,6 +731,8 @@ class Ui_MainWindow(object):
         return image_container
 
     def set_label_as_text(self, text: str, text_container: QtWidgets.QLabel):
+        if text == "null":
+            text = ""
         _translate = QtCore.QCoreApplication.translate
         text_container.setText(_translate("MainWindow", text))
 
@@ -805,24 +818,27 @@ class Ui_MainWindow(object):
         self.set_small_info4(page_list[3])
         self.set_small_info5(page_list[4])
         self.set_label_as_text(str(contacts_list.cur_page), self.current_page)
-        # Connect signals & slots
-        # Define slots functions
+
+    def search(self):
+        query = self.search_input_field.text()
+        res = contacts_list.find_by_id(query)
+        if res.is_valid():
+            res = get_full_info(query)
+            get_big_ava(query)
+        self.set_label_as_image(res.get_dir_big_avatar(),
+                                self.big_pic_container)
+        self.set_label_as_text(res.id, self.id_container)
+        self.set_label_as_text(res.fullname, self.name_container)
+        self.set_label_as_text(res.contact, self.phone_container)
+        self.set_label_as_text(res.email, self.email_container)
 
 
 def delete_data():
-    folder1, folder2 = "data/avatar/big", "data/avatar/small"
-    for filename in os.listdir(folder1):
-        os.remove(os.path.join(folder1, filename))
-    for filename in os.listdir(folder2):
-        os.remove(os.path.join(folder2, filename))
+    for filename in os.listdir(BIG_PIC_FOLDER):
+        os.remove(os.path.join(BIG_PIC_FOLDER, filename))
+    for filename in os.listdir(SMALL_PIC_FOLDER):
+        os.remove(os.path.join(SMALL_PIC_FOLDER, filename))
 
-
-HOST = "127.0.0.1"
-SERVER_PORT = 65432
-FORMAT = "utf8"
-SEPARATOR = "</>"
-BUFFER_SIZE = 1024
-END_MESSAGE_SIZE = 17
 
 # Receive a list from server
 
@@ -853,14 +869,6 @@ def recvFile(conn):
         # Receive 1024 bytes from the socket
         bytes_read = conn.recv(BUFFER_SIZE)
         bytes_count += len(bytes_read)
-        # print('---', len(bytes_read), 'total:', bytes_count)
-
-        # if (len(bytes_read) < 1024):    # reach end of file
-
-        #     if (len(bytes_read) == 17 and bytes_read.decode(FORMAT) == "END_FILE_TRANSFER"):
-        #         print('EFT')    # An end message in need
-        #         break
-        #     condition = 0
 
         if bytes_count < fileSize:
             fileOut.write(bytes_read)
@@ -894,7 +902,7 @@ def recvFile(conn):
     return fileName
 
 
-def get_initial_list(client: socket):
+def get_initial_list():
     msg = "list"
     client.sendall(msg.encode(FORMAT))
     num = int(client.recv(BUFFER_SIZE).decode(FORMAT))
@@ -907,7 +915,7 @@ def get_initial_list(client: socket):
     contacts_list = ClientList(members)
 
 
-def get_small_ava_list(client: socket):
+def get_small_ava_list():
     msg = "small ava"
     client.sendall(msg.encode(FORMAT))
     num = int(client.recv(BUFFER_SIZE).decode(FORMAT))
@@ -917,26 +925,33 @@ def get_small_ava_list(client: socket):
         client.send(msg.encode(FORMAT))
 
 
-def get_big_ava(client: socket, id):
+def get_big_ava(id):
     msg = "big ava"
     client.sendall(msg.encode(FORMAT))
     client.recv(BUFFER_SIZE)
     client.send(str(id).encode(FORMAT))
-    members[id].bigAvaPath = recvFile(client)
-    return members[id].bigAvaPath
+    members[int(id)].bigAvaPath = recvFile(client)
+    return members[int(id)].bigAvaPath
 
 
-def get_full_info(client: socket, id):
+def get_full_info(id):
     msg = "info"
     client.sendall(msg.encode(FORMAT))
     client.recv(BUFFER_SIZE)
     client.send(str(id).encode(FORMAT))
     addInfo = recvList(client)
-    members[id].contact = addInfo[0]
-    members[id].email = addInfo[1]
+    for i in range(len(contacts_list.client_list)):
+        if contacts_list.client_list[i].id == str(id):
+            contacts_list.client_list[i].contact = addInfo[0]
+            contacts_list.client_list[i].email = addInfo[1]
+            return contacts_list.client_list[i]
+
+    return Client(None)
+    # members[id].contact = addInfo[0]
+    # members[id].email = addInfo[1]
 
 
-def close_connection(client: socket):
+def close_connection():
     msg = "x"
     client.sendall(msg.encode(FORMAT))
 
@@ -949,6 +964,7 @@ app = QtWidgets.QApplication(sys.argv)
 
 if __name__ == '__main__':
     # Initialize socket & members list
+    global client
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     print("CLIENT SIDE")
     global members
@@ -958,12 +974,13 @@ if __name__ == '__main__':
 
     # Connect to server
     try:
+
         client.connect((HOST, SERVER_PORT))
         print("Client address: ", client.getsockname())
 
         # getting initial information
-        get_initial_list(client)
-        get_small_ava_list(client)
+        get_initial_list()
+        get_small_ava_list()
 
         # gui starts
         ui_object = Ui_MainWindow()
@@ -974,7 +991,7 @@ if __name__ == '__main__':
         print('app started')
         app.exec_()
         print('app ended')
-        close_connection(client)
+        close_connection()
         client.close()
         print('client closed')
 
