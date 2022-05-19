@@ -27,13 +27,16 @@ def sendFile(conn, filename, filesize):
     fileIn = open(filename, "rb")
     count = 0
     while(1):
-        byte_read = fileIn.read(1024)
-        conn.sendall(byte_read)
-        count += 1
+        byte_read = fileIn.read(1024)   
         if not byte_read:
             endMsg = "END_FILE_TRANSFER"
+            # print('sending end message')
             conn.sendall(endMsg.encode(FORMAT))
-            break      
+            break
+        conn.sendall(byte_read)
+        # print('sending', len(byte_read))
+        count += 1
+             
     fileIn.close()         
               
 # Handle with clients socket within threads

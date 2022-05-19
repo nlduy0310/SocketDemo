@@ -1,5 +1,6 @@
 from base64 import encode
 import socket
+import traceback
 import os
 
 HOST = "127.0.0.1"
@@ -21,7 +22,9 @@ def recvList(conn):
 
 # Receive a file from server
 def recvFile(conn):
+    # print('RECEIVING')
     fileInfo = conn.recv(BUFFER_SIZE).decode(FORMAT)
+    # print('fileInfo:', fileInfo)
     conn.sendall("ReadyToReceiveFile".encode(FORMAT))
     fileName, fileSize = fileInfo.split(SEPARATOR)
     #fileName = ".\\data\\" + os.path.basename(fileName)
@@ -31,10 +34,12 @@ def recvFile(conn):
     while (condition==1):
         # Receive 1024 bytes from the socket
         bytes_read = conn.recv(BUFFER_SIZE)
+        # print('---', len(bytes_read))
         if (len(bytes_read) < 1024):    # reach end of file
-            if (len(bytes_read)==17 and bytes_read.decode(FORMAT)=="END_FILE_TRANSFER"):    # An end message in need
+            if (len(bytes_read)==17 and bytes_read.decode(FORMAT)=="END_FILE_TRANSFER"):
+                # print('EFT')    # An end message in need
                 break
-            condition = 0
+            # condition = 0
         # Write to the file the bytes we just received        
         fileOut.write(bytes_read)
     print("File is transfered.")
@@ -143,10 +148,10 @@ if __name__ == "__main__":
                 members[id].contact = addInfo[0]
                 members[id].email = addInfo[1]
 
-                
 
-    except:
+    except Exception:
         print("Error occured.")
+        traceback.print_exception()
 
     list.show_all()
     client.close()
