@@ -8,6 +8,7 @@ SERVER_PORT = 65432
 FORMAT = "utf8"
 SEPARATOR = "</>"
 BUFFER_SIZE = 1024
+END_MESSAGE_SIZE = 17
 
 
 # Receive a list from server
@@ -21,30 +22,48 @@ def recvList(conn):
     return list
 
 # Receive a file from server
+
+
 def recvFile(conn):
-    # print('RECEIVING')
     fileInfo = conn.recv(BUFFER_SIZE).decode(FORMAT)
-    # print('fileInfo:', fileInfo)
     conn.sendall("ReadyToReceiveFile".encode(FORMAT))
     fileName, fileSize = fileInfo.split(SEPARATOR)
     #fileName = ".\\data\\" + os.path.basename(fileName)
     fileSize = int(fileSize)
-    fileOut = open(fileName, "wb") 
-    condition = 1   
-    while (condition==1):
+    bytes_count = 0
+    fileOut = open(fileName, "wb")
+    condition = 1
+    while (condition == 1):
         # Receive 1024 bytes from the socket
         bytes_read = conn.recv(BUFFER_SIZE)
-        # print('---', len(bytes_read))
-        if (len(bytes_read) < 1024):    # reach end of file
-            if (len(bytes_read)==17 and bytes_read.decode(FORMAT)=="END_FILE_TRANSFER"):
-                # print('EFT')    # An end message in need
-                break
-            # condition = 0
-        # Write to the file the bytes we just received        
-        fileOut.write(bytes_read)
+        bytes_count += len(bytes_read)
+        # print('---', len(bytes_read), 'total:', bytes_count)
+
+        # if (len(bytes_read) < 1024):    # reach end of file
+
+
+        #     if (len(bytes_read) == 17 and bytes_read.decode(FORMAT) == "END_FILE_TRANSFER"):
+        #         print('EFT')    # An end message in need
+        #         break
+        #     condition = 0
+
+        if bytes_count < fileSize:
+            fileOut.write(bytes_read)
+            # print('writing', len(bytes_read))
+        elif bytes_count == fileSize:
+            bytes_read == conn.recv(BUFFER_SIZE) # end message
+            fileOut.write(bytes_read)
+            break
+        else:
+            fileOut.write(bytes_read[:-END_MESSAGE_SIZE])
+            break
+
+        # Write to the file the bytes we just received
+        # fileOut.write(bytes_read)
     print("File is transfered.")
     fileOut.close()
     return fileName
+
 
 class Client:
 
@@ -65,7 +84,7 @@ class Client:
                 self.email = data[3]
 
     def __str__(self):
-        return "Id: " + str(self.id) + " \nFull name: " +  self.fullname + " \nContact: " +  self.contact + "\nEmail: " + self.email
+        return "Id: " + str(self.id) + " \nFull name: " + self.fullname + " \nContact: " + self.contact + "\nEmail: " + self.email
 
 
 class ClientList:
@@ -73,13 +92,13 @@ class ClientList:
     def __init__(self, clients):
         self.client_list = clients
         self.size = len(clients)
-        
+
     def show_all(self):
         for client in self.client_list:
             print(client)
-    
+
     def find_by_id(self, idx):
-        return self.client_list[idx] if idx < self.size and idx > 0 else Client(None)
+        return self.client_list[idx] if idx < self.size and idx >= 0 else Client(None)
 
     def find_by_phone(self, phone):
 
@@ -89,18 +108,20 @@ class ClientList:
         for i in range(self.size):
             if self.client_list[i].contact == phone:
                 return self.client_list[i]
-        
+
         return Client(None)
 
     def find_by_name(self, name):
 
         if(isinstance(name, type(str)) != True):
             name = str(name)
-        
-        clients_res = [client for client in self.client_list if name.strip().lower() in client.fullname.lower()]
+
+        clients_res = [client for client in self.client_list if name.strip(
+        ).lower() in client.fullname.lower()]
 
         clients_res = ClientList(clients_res)
-        return clients_res    
+        return clients_res
+
 
 # ---main---
 if __name__ == "__main__":
@@ -117,7 +138,7 @@ if __name__ == "__main__":
             msg = input("Input: ")
             client.sendall(msg.encode(FORMAT))
             # Truy van danh sach ban dau
-            if (msg == "list"):                                     
+            if (msg == "list"):
                 num = int(client.recv(BUFFER_SIZE).decode(FORMAT))
                 client.send(msg.encode(FORMAT))
                 for i in range(num):
@@ -130,7 +151,7 @@ if __name__ == "__main__":
             elif (msg == "big ava"):
                 client.recv(BUFFER_SIZE)
                 id = 0  # ID cua thanh vien can lay thong tin
-                client.send(id.encode(FORMAT))
+                client.send(str(id).encode(FORMAT))
                 members[id].bigAvaPath = recvFile(client)
             # Truy van Small avatar cho tat ca thanh vien
             elif (msg == "small ava"):
@@ -147,7 +168,6 @@ if __name__ == "__main__":
                 addInfo = recvList(client)
                 members[id].contact = addInfo[0]
                 members[id].email = addInfo[1]
-
 
     except Exception:
         print("Error occured.")

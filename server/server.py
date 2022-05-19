@@ -11,6 +11,7 @@ SEPARATOR = "</>"
 BUFFER_SIZE = 1024
 
 # Send a list to client
+
 def sendList(conn, list):
     for item in list:
         conn.sendall(str(item).encode(FORMAT))
@@ -18,29 +19,33 @@ def sendList(conn, list):
     endMsg = "end"
     conn.send(endMsg.encode(FORMAT))
 
+
 # Send a file to client
+
 def sendFile(conn, filename, filesize):
     print(f"{filename}{SEPARATOR}{filesize}")
     conn.send(f"{filename}{SEPARATOR}{filesize}".encode(FORMAT))
     conn.recv(BUFFER_SIZE).decode(FORMAT)
-    
+
     fileIn = open(filename, "rb")
     count = 0
     while(1):
-        byte_read = fileIn.read(1024)   
+        byte_read = fileIn.read(1024)
         if not byte_read:
             endMsg = "END_FILE_TRANSFER"
-            # print('sending end message')
             conn.sendall(endMsg.encode(FORMAT))
+            # print('sending end message')
             break
         conn.sendall(byte_read)
         # print('sending', len(byte_read))
         count += 1
-             
-    fileIn.close()         
-              
+
+    fileIn.close()
+
+
 # Handle with clients socket within threads
-def handleClient(conn:socket, addr):
+
+def handleClient(conn: socket, addr):
     print("Client ", addr, " connected")
     msg = None
     while (1):
@@ -59,31 +64,35 @@ def handleClient(conn:socket, addr):
             conn.send(msg.encode(FORMAT))
             id = conn.recv(BUFFER_SIZE).decode(FORMAT)
             id = int(id)
+            print('id: ', id)
             path = clients.find_by_id(id).get_dir_big_avatar()
+            print('Path: ', path)
             sendFile(conn, path, os.path.getsize(path))
         elif (msg == "small ava"):
+            # print('sending size', clients.size)
             conn.send(str(clients.size).encode(FORMAT))
             conn.recv(BUFFER_SIZE).decode(FORMAT)
             for i in range(clients.size):
                 path = clients.client_list[i].get_dir_small_avatar()
+                # print('sending file#', i)
                 sendFile(conn, path, os.path.getsize(path))
                 conn.recv(BUFFER_SIZE).decode(FORMAT)
+                # print('received msg')
         elif (msg == "list"):
             conn.send(str(clients.size).encode(FORMAT))
             conn.recv(BUFFER_SIZE).decode(FORMAT)
             for i in range(clients.size):
-                member = [clients.client_list[i].id, clients.client_list[i].fullname, "null", "null"]
+                member = [clients.client_list[i].id,
+                          clients.client_list[i].fullname, "null", "null"]
                 sendList(conn, member)
                 conn.recv(BUFFER_SIZE).decode(FORMAT)
         elif (msg == "info"):
             conn.send(msg.encode(FORMAT))
             id = conn.recv(BUFFER_SIZE).decode(FORMAT)
             id = int(id)
-            info = [clients.client_list[id].contact, clients.client_list[id].email]
+            info = [clients.client_list[id].contact,
+                    clients.client_list[id].email]
             sendList(conn, info)
-
-
-        
 
     print("Client ", addr, " finished, close", conn.getsockname())
     conn.close()
@@ -92,9 +101,8 @@ def handleClient(conn:socket, addr):
         s.close()
 
 
-
-
 # ---main---
+
 if __name__ == "__main__":
     clients = hj.load()
 
