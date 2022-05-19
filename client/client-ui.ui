@@ -218,12 +218,15 @@ font: 8pt &quot;Calibri&quot;;</string>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_3">
              <item>
-              <widget class="QFrame" name="frame_9">
-               <property name="frameShape">
-                <enum>QFrame::StyledPanel</enum>
+              <widget class="QLabel" name="profile_pic_label">
+               <property name="styleSheet">
+                <string notr="true">font: 18pt &quot;Calibri&quot;;</string>
                </property>
-               <property name="frameShadow">
-                <enum>QFrame::Raised</enum>
+               <property name="text">
+                <string>Profile Picture</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
                </property>
               </widget>
              </item>
@@ -262,7 +265,7 @@ font: 8pt &quot;Calibri&quot;;</string>
                   <property name="maximumSize">
                    <size>
                     <width>16777215</width>
-                    <height>400</height>
+                    <height>478</height>
                    </size>
                   </property>
                   <property name="frameShape">
@@ -272,7 +275,7 @@ font: 8pt &quot;Calibri&quot;;</string>
                    <string/>
                   </property>
                   <property name="pixmap">
-                   <pixmap>images/maxresdefault.jpg</pixmap>
+                   <pixmap resource="images.qrc">:/images/images/default-pic.png</pixmap>
                   </property>
                   <property name="scaledContents">
                    <bool>true</bool>
@@ -723,7 +726,7 @@ border-radius:10px;
 border-right:0px</string>
                   </property>
                   <property name="text">
-                   <string>Nguyen Van A</string>
+                   <string>Name_1</string>
                   </property>
                   <property name="alignment">
                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -740,7 +743,7 @@ border-right:0px</string>
 border-right: 0px</string>
                   </property>
                   <property name="text">
-                   <string>0123456789</string>
+                   <string>id_1</string>
                   </property>
                   <property name="alignment">
                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -780,7 +783,7 @@ border-right: 0px</string>
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>images/maxresdefault.jpg</pixmap>
+                <pixmap resource="images.qrc">:/images/images/default-pic.png</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -818,7 +821,7 @@ border-right: 0px</string>
 border-right:0px</string>
                   </property>
                   <property name="text">
-                   <string>TextLabel</string>
+                   <string>Name_2</string>
                   </property>
                   <property name="alignment">
                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -835,7 +838,7 @@ border-right:0px</string>
 border-right: 0px</string>
                   </property>
                   <property name="text">
-                   <string>TextLabel</string>
+                   <string>id_1</string>
                   </property>
                   <property name="alignment">
                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -872,7 +875,7 @@ border-right: 0px</string>
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>images/maxresdefault.jpg</pixmap>
+                <pixmap resource="images.qrc">:/images/images/default-pic.png</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -910,7 +913,7 @@ border-right: 0px</string>
 border-right:0px</string>
                   </property>
                   <property name="text">
-                   <string>TextLabel</string>
+                   <string>Name_3</string>
                   </property>
                   <property name="alignment">
                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -927,7 +930,7 @@ border-right:0px</string>
 border-right: 0px</string>
                   </property>
                   <property name="text">
-                   <string>TextLabel</string>
+                   <string>id_3</string>
                   </property>
                   <property name="alignment">
                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -964,7 +967,7 @@ border-right: 0px</string>
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>images/maxresdefault.jpg</pixmap>
+                <pixmap resource="images.qrc">:/images/images/default-pic.png</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -1002,7 +1005,7 @@ border-right: 0px</string>
 border-right:0px</string>
                   </property>
                   <property name="text">
-                   <string>TextLabel</string>
+                   <string>Name_4</string>
                   </property>
                   <property name="alignment">
                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -1019,7 +1022,7 @@ border-right:0px</string>
 border-right: 0px</string>
                   </property>
                   <property name="text">
-                   <string>TextLabel</string>
+                   <string>id_4</string>
                   </property>
                   <property name="alignment">
                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -1056,7 +1059,7 @@ border-right: 0px</string>
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>images/maxresdefault.jpg</pixmap>
+                <pixmap resource="images.qrc">:/images/images/default-pic.png</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -1094,7 +1097,7 @@ border-right: 0px</string>
 border-right:0px</string>
                   </property>
                   <property name="text">
-                   <string>TextLabel</string>
+                   <string>Name_5</string>
                   </property>
                   <property name="alignment">
                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -1111,7 +1114,7 @@ border-right:0px</string>
 border-right: 0px</string>
                   </property>
                   <property name="text">
-                   <string>TextLabel</string>
+                   <string>id_5</string>
                   </property>
                   <property name="alignment">
                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -1148,7 +1151,7 @@ border-right: 0px</string>
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>images/maxresdefault.jpg</pixmap>
+                <pixmap resource="images.qrc">:/images/images/default-pic.png</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -1228,7 +1231,7 @@ background-color: rgb(255, 170, 0)</string>
                 <string notr="true">font: 10pt &quot;Calibri&quot;</string>
                </property>
                <property name="text">
-                <string>TextLabel</string>
+                <string>page</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignCenter</set>

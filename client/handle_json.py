@@ -1,3 +1,4 @@
+from imp import load_package
 import json
 from PIL import Image, ImageOps, ImageDraw
 
@@ -16,22 +17,25 @@ class Client:
             self.email = "null"
 
         else:
-            self.id = data['id']
-            self.fullname = data['fullname']
-            self.contact = data['contact']
-            if isinstance(data['email'], type(None)):
+            self.id = str(data[0])
+            self.fullname = str(data[1])
+            self.contact = str(data[2])
+            if isinstance(data[3], type(None)):
                 self.email = "null"
             else:
-                self.email = data['email']
+                self.email = str(data[3])
 
     def __str__(self):
         return "Id: " + str(self.id) + " \nFull name: " + self.fullname + " \nContract: " + self.contact + "\nEmail: " + self.email
 
     def get_dir_big_avatar(self):
-        return DIRECT_TO_AVATAR[0] + str(self.id) + ".png"
+        return "data/avatar/big/" + str(self.id) + ".png"
 
     def get_dir_small_avatar(self):
-        return DIRECT_TO_AVATAR[1] + str(self.id) + ".png"
+        return "data/avatar/small/" + str(self.id) + ".png"
+
+    def is_valid(self):
+        return self.id != "null" and self.fullname != "null"
 
 # Danh sách client
 
@@ -41,15 +45,18 @@ class ClientList:
     def __init__(self, clients):
         self.client_list = clients
         self.size = len(clients)
-        self.max_page = self.get_pages_count()
-        self.cur_page = 0
+        self.cur_page = 1
 
     def show_all(self):
         for client in self.client_list:
             print(client)
 
-    def find_by_id(self, idx):
-        return self.client_list[idx] if idx < self.size and idx >= 0 else Client(None)
+    def find_by_id(self, id):
+        for item in self.client_list:
+            if item.id == id:
+                return item
+
+        return Client(None)
 
     def find_by_phone(self, phone):
 
@@ -74,33 +81,42 @@ class ClientList:
         return clients_res
 
     def get_pages_count(self):
-        if not self.client_list:
+        if len(self.client_list) == 0:
             return 0
-        elif self.size % page_size == 0:
-            return self.size / page_size
+        elif (len(self.client_list) % page_size) == 0:
+            return len(self.client_list) // page_size
         else:
-            return int(self.size / page_size) + 1
+            return int(self.client_list // page_size) + 1
 
     def load_client(self, page, index):
+
         if page < 1 or page > self.get_pages_count() or index < 0 or index >= page_size:
             return Client(None)
         else:
             return self.client_list[(page - 1) * page_size + index]
 
+    def load_page(self, page):
+        res = []
+        for i in range(page_size):
+            res.append(self.load_client(page, i))
+
+        return res
+
+    def next_page(self):
+        if self.cur_page == self.get_pages_count():
+            return self.load_page(self.cur_page)
+        else:
+            self.cur_page += 1
+            return self.load_page(self.cur_page)
+
+    def prev_page(self):
+        if self.cur_page == 1:
+            return self.load_page(self.cur_page)
+        else:
+            self.cur_page -= 1
+            return self.load_page(self.cur_page)
+
     # Hàm chuyển đổi sang avatar nhỏ
-
-    def convert_big_to_small(self):
-        size = (50, 50)
-        for i in range(self.size):
-            mask = Image.new('L', size, 0)
-            draw = ImageDraw.Draw(mask)
-            draw.ellipse((0, 0) + size, fill=255)
-
-            im = Image.open(self.client_list[i].get_dir_big_avatar())
-
-            output = ImageOps.fit(im, mask.size, centering=(0.5, 0.5))
-            output.putalpha(mask)
-            output.save(self.client_list[i].get_dir_small_avatar())
 
 
 # CÁC HÀM ĐỌC, HỖ TRỢ
@@ -122,39 +138,4 @@ def load():
     # Sort theo ID
     clients.sort(key=lambda x: x.id)
     list_client = ClientList(clients)
-    #print("size: ", len(clients))
     return list_client
-
-
-# ------- main ------- #
-if __name__ == "__main__":
-    clients = load()
-    # Hàm covert Avatar lớn sang nhỏ:
-    # clients.convert_big_to_small()
-    # print("Tổng số thành viên: ", clients.size)
-    # print("Thông tin thành viên: \n")
-    # clients.show_all()
-    # print("\n")
-
-    # Tìm theo id
-    # print("Thành viên có id thứ 4:")
-    # print(clients.find_by_id(4))
-    # print("Thành viên thứ 15: ")
-    # print(clients.find_by_id(15))
-
-    # Tìm theo sdt:
-    # print(clients.find_by_phone("0123456777"))
-    # print(clients.find_by_phone("31231412312"))
-
-    # Tim theo ten:
-    # print("Tìm tên Phú: ")
-    # list_by_name = clients.find_by_name("phú")
-    # list_by_name.show_all()
-
-    # print("Tìm tên có Nguyễn Văn: ")
-    # list_by_name = clients.find_by_name("Nguyễn Văn")
-    # list_by_name.show_all()
-
-    # print("Tìm tên có họ Nguyễn: ")
-    # list_by_name = clients.find_by_name("  Nguyễn   ")
-    # list_by_name.show_all()

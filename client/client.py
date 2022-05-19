@@ -41,7 +41,6 @@ def recvFile(conn):
 
         # if (len(bytes_read) < 1024):    # reach end of file
 
-
         #     if (len(bytes_read) == 17 and bytes_read.decode(FORMAT) == "END_FILE_TRANSFER"):
         #         print('EFT')    # An end message in need
         #         break
@@ -51,11 +50,16 @@ def recvFile(conn):
             fileOut.write(bytes_read)
             # print('writing', len(bytes_read))
         elif bytes_count == fileSize:
-            bytes_read == conn.recv(BUFFER_SIZE) # end message
+            bytes_read = conn.recv(BUFFER_SIZE)  # end message
             fileOut.write(bytes_read)
             break
         else:
-            fileOut.write(bytes_read[:-END_MESSAGE_SIZE])
+            diff = bytes_count - fileSize
+            if diff == 17:
+                fileOut.write(bytes_read[:-END_MESSAGE_SIZE])
+            else:
+                fileOut.write(bytes_read[:-diff])
+                bytes_read = conn.recv(BUFFER_SIZE)
             break
 
         # Write to the file the bytes we just received
