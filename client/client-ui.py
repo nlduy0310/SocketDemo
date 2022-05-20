@@ -856,7 +856,7 @@ def delete_data():
 def recvList(conn):
     list = []
     item = conn.recv(1024).decode(FORMAT)
-    while(item != "end"):
+    while(item != "END_LIST_TRANSFER"):
         list.append(item)
         conn.sendall(item.encode(FORMAT))
         item = conn.recv(1024).decode(FORMAT)
@@ -913,7 +913,7 @@ def recvFile(conn):
 
 
 def get_initial_list():
-    msg = "list"
+    msg = "LIST_MEMBER"
     client.sendall(msg.encode(FORMAT))
     num = int(client.recv(BUFFER_SIZE).decode(FORMAT))
     client.send(msg.encode(FORMAT))
@@ -926,7 +926,7 @@ def get_initial_list():
 
 
 def get_small_ava_list():
-    msg = "small ava"
+    msg = "SMALL_AVA"
     client.sendall(msg.encode(FORMAT))
     num = int(client.recv(BUFFER_SIZE).decode(FORMAT))
     client.send(msg.encode(FORMAT))
@@ -936,7 +936,7 @@ def get_small_ava_list():
 
 
 def get_big_ava(id):
-    msg = "big ava"
+    msg = "BIG_AVA"
     client.sendall(msg.encode(FORMAT))
     client.recv(BUFFER_SIZE)
     client.send(str(id).encode(FORMAT))
@@ -945,7 +945,7 @@ def get_big_ava(id):
 
 
 def get_full_info(id):
-    msg = "info"
+    msg = "INFO_MEMBER"
     client.sendall(msg.encode(FORMAT))
     client.recv(BUFFER_SIZE)
     client.send(str(id).encode(FORMAT))
@@ -962,7 +962,7 @@ def get_full_info(id):
 
 
 def close_connection():
-    msg = "x"
+    msg = "CLOSE_CONNECTION"
     client.sendall(msg.encode(FORMAT))
 
 

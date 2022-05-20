@@ -16,7 +16,7 @@ def sendList(conn, list):
     for item in list:
         conn.sendall(str(item).encode(FORMAT))
         conn.recv(BUFFER_SIZE)
-    endMsg = "end"
+    endMsg = "END_LIST_TRANSFER"
     conn.send(endMsg.encode(FORMAT))
 
 
@@ -51,16 +51,16 @@ def handleClient(conn: socket, addr):
     while (1):
         msg = conn.recv(BUFFER_SIZE).decode(FORMAT)
         print("Client ", addr, " said: ", msg)
-        if (msg == "x"):
+        if (msg == "CLOSE_CONNECTION"):
             break
-        elif (msg == "close all"):
+        elif (msg == "CLOSE_ALL_CONNECTIONS"):
             global listening
             listening = 0
             endSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             endSock.connect((HOST, SERVER_PORT))
             endSock.close()
             break
-        elif (msg == "big ava"):
+        elif (msg == "BIG_AVA"):
             conn.send(msg.encode(FORMAT))
             id = conn.recv(BUFFER_SIZE).decode(FORMAT)
             id = int(id)
@@ -68,7 +68,7 @@ def handleClient(conn: socket, addr):
             path = clients.find_by_id(id).get_dir_big_avatar()
             print('Path: ', path)
             sendFile(conn, path, os.path.getsize(path))
-        elif (msg == "small ava"):
+        elif (msg == "SMALL_AVA"):
             # print('sending size', clients.size)
             conn.send(str(clients.size).encode(FORMAT))
             conn.recv(BUFFER_SIZE).decode(FORMAT)
@@ -78,7 +78,7 @@ def handleClient(conn: socket, addr):
                 sendFile(conn, path, os.path.getsize(path))
                 conn.recv(BUFFER_SIZE).decode(FORMAT)
                 # print('received msg')
-        elif (msg == "list"):
+        elif (msg == "LIST_MEMBER"):
             conn.send(str(clients.size).encode(FORMAT))
             conn.recv(BUFFER_SIZE).decode(FORMAT)
             for i in range(clients.size):
@@ -86,7 +86,7 @@ def handleClient(conn: socket, addr):
                           clients.client_list[i].fullname, "null", "null"]
                 sendList(conn, member)
                 conn.recv(BUFFER_SIZE).decode(FORMAT)
-        elif (msg == "info"):
+        elif (msg == "INFO_MEMBER"):
             conn.send(msg.encode(FORMAT))
             id = conn.recv(BUFFER_SIZE).decode(FORMAT)
             id = int(id)
@@ -96,7 +96,7 @@ def handleClient(conn: socket, addr):
 
     print("Client ", addr, " finished, close", conn.getsockname())
     conn.close()
-    if (msg == "close all"):
+    if (msg == "CLOSE_ALL_CONNECTION"):
         global s
         s.close()
 
@@ -109,6 +109,7 @@ if __name__ == "__main__":
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.bind((HOST, SERVER_PORT))
     s.listen()
+    s.settimeout(1000)
 
     print("SERVER SIDE")
     print("Server: ", HOST, SERVER_PORT)
@@ -123,8 +124,14 @@ if __name__ == "__main__":
             thread = threading.Thread(target=handleClient, args=(conn, addr))
             thread.daemon = False
             thread.start()
+        except KeyboardInterrupt:
+            exit()
         except:
             print("A thread ended.")
+            listening = 0
+
+        
+
 
     print("End.")
     s.close()
