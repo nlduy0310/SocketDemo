@@ -831,6 +831,7 @@ class Ui_MainWindow(object):
             else:
                 res = res.client_list[0]
         query = res.id
+        
         if res.is_valid():
             res = get_full_info(query)
             get_big_ava(query)
