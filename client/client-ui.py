@@ -699,7 +699,7 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Client"))
         self.search_input_field.setPlaceholderText(
-            _translate("MainWindow", "Search by id"))
+            _translate("MainWindow", "Search by id/name"))
         self.profile_pic_label.setText(
             _translate("MainWindow", "Profile Picture"))
         self.info_label.setText(_translate("MainWindow", "Information"))
@@ -821,7 +821,16 @@ class Ui_MainWindow(object):
 
     def search(self):
         query = self.search_input_field.text()
-        res = contacts_list.find_by_id(query)
+
+        if(str(query).isnumeric()):
+            res = contacts_list.find_by_id(query)
+        else:
+            res = contacts_list.find_by_name(query)
+            if res.size == 0:
+                res = Client(None)
+            else:
+                res = res.client_list[0]
+        query = res.id
         if res.is_valid():
             res = get_full_info(query)
             get_big_ava(query)
